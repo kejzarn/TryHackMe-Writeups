@@ -200,7 +200,7 @@ Upgrade-Insecure-Requests: 1
 
 commands=whoami
 ```
-As suspected we forward a `whoami`command to the server, I modify to a `ls` to list all files in our current directory, to get an understanding what is in there and what we are working with. We hit jackpot and find several things we are looking for: 
+As suspected we forward a `whoami`command to the server, I modify to the commands parameter to a `ls` to list all files in our current directory, to get an understanding what is in there and what we are working with. We hit jackpot and find several things we are looking for: 
 
 ![adminportal](https://github.com/kejzarn/TryHackMe-Writeups/blob/main/traverse/img/adminportal.png)
 
