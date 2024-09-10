@@ -7,7 +7,7 @@ Deploy the machine by clicking the Start Machine button on the top right. You ca
 
 ## Table of Contents
 
-- [Initial reconnaissance & thoughts](#Initial-reconnaissance-&--thoughts)
+- [Solution](#Solution)
 - [What type of encoding is used by the hackers to obfuscate the JavaScript file?](#what-type-of-encoding-is-used-by-the-hackers-to-obfuscate-the-javascript-file)
 - [What is the flag value after deobfuscating the file?](#what-is-the-flag-value-after-deobfuscating-the-file)
 - [Logging is an important aspect. What is the name of the file containing email dumps?](#logging-is-an-important-aspect-what-is-the-name-of-the-file-containing-email-dumps)
@@ -19,17 +19,17 @@ Deploy the machine by clicking the Start Machine button on the top right. You ca
 - [The attacker uploaded a web shell and renamed a file used for managing the server. Can you find the name of the web shell that the attacker has uploaded?](#the-attacker-uploaded-a-web-shell-and-renamed-a-file-used-for-managing-the-server-can-you-find-the-name-of-the-web-shell-that-the-attacker-has-uploaded)
 - [What is the name of the file renamed by the attacker for managing the web server?](#what-is-the-name-of-the-file-renamed-by-the-attacker-for-managing-the-web-server)
 - [Can you use the file manager to restore the original website by removing the "FINALLY HACKED" message? What is the flag value after restoring the main website?](#can-you-use-the-file-manager-to-restore-the-original-website-by-removing-the-finally-hacked-message-what-is-the-flag-value-after-restoring-the-main-website)
-- [](#Conclussions)
+- [Conclussions](#Conclussions)
 
-# Initial reconnaissance & thoughts
+# Solution
 
-I began by visiting the provided url, in my case http://10.10.205.169 (**this will differ in your case and you need to modify all urls**). The websited had obviously been hacked and it is our job to unhack it. 
+I began by visiting the provided url, in my case http://10.10.205.169 (**this will differ in your case and you need to modify all urls**). The website had obviously been hacked and it is our job to unhack it. 
 
 ![traverse/img/hacked.jpeg](https://github.com/kejzarn/TryHackMe-Writeups/blob/main/traverse/img/hacked.jpeg) <br>
 Before starting my manual inspection I started a nikto scan with `nikto -h http://10.10.205.169`. As I performed my inspection I noticed some comments left by the hackers: <br>
 ![header](https://github.com/kejzarn/TryHackMe-Writeups/blob/main/traverse/img/header.png)
 
-Which lead me to inspect `custom.min.js`. The file contained the following obfuscated message:
+Which led me to inspect `custom.min.js`. The file contained the following obfuscated message:
 
 ```
 // I WILL KEEP THE OBFUSCATED SO NO ONE CAN UNDERSTAND
@@ -37,7 +37,7 @@ Which lead me to inspect `custom.min.js`. The file contained the following obfus
 28 66 75 6E 63 74 69 6F 6E 28 29 7B 66 75 6E 63 74 69 6F 6E 20 64 6F 4E 6F 74 68 69 6E 67 28 29 7B 7D 76 61 72 20 6E 3D 22 44 49 52 45 43 54 4F 52 59 22 3B 76 61 72 20 65 3D 22 4C 49 53 54 49 4E 47 22 3B 76 61 72 20 6F 3D 22 49 53 20 54 48 45 22 3B 76 61 72 20 69 3D 22 4F 4E 4C 59 20 57 41 59 22 3B 76 61 72 20 66 3D 6E 75 6C 6C 3B 76 61 72 20 6C 3D 66 61 6C 73 65 3B 76 61 72 20 64 3B 69 66 28 66 3D 3D 3D 6E 75 6C 6C 29 7B 63 6F 6E 73 6F 6C 65 2E 6C 6F 67 28 22 46 6C 61 67 3A 22 2B 6E 2B 22 20 22 2B 65 2B 22 20 22 2B 6F 2B 22 20 22 2B 69 29 3B 64 3D 75 6E 64 65 66 69 6E 65 64 7D 65 6C 73 65 20 69 66 28 74 79 70 65 6F 66 20 66 3D 3D 3D 22 75 6E 64 65 66 69 6E 65 64 22 29 7B 64 3D 75 6E 64 65 66 69 6E 65 64 7D 65 6C 73 65 7B 69 66 28 6C 29 7B 64 3D 75 6E 64 65 66 69 6E 65 64 7D 65 6C 73 65 7B 28 66 75 6E 63 74 69 6F 6E 28 29 7B 69 66 28 64 29 7B 66 6F 72 28 76 61 72 20 6E 3D 30 3B 6E 3C 31 30 3B 6E 2B 2B 29 7B 63 6F 6E 73 6F 6C 65 2E 6C 6F 67 28 22 54 68 69 73 20 63 6F 64 65 20 64 6F 65 73 20 6E 6F 74 68 69 6E 67 2E 22 29 7D 64 6F 4E 6F 74 68 69 6E 67 28 29 7D 65 6C 73 65 7B 64 6F 4E 6F 74 68 69 6E 67 28 29 7D 7D 29 28 29 7D 7D 7D 29 28 29 3B
 ```
 
-I recognise the format from hexadecimal format and like to utilise [hex analyser](https://www.boxentriq.com/code-breaking/hex-analysis) from [boxentriq.com](https://www.boxentriq.com) (remember to remove to comment!) the result is the follow:
+I recognize the format from hexadecimal format and like to utilise [hex analyser](https://www.boxentriq.com/code-breaking/hex-analysis) from [boxentriq.com](https://www.boxentriq.com) (remember to remove to comment!) the result is the follow:
 
 ```
 (function(){function doNothing(){}var n="DIRECTORY";var e="LISTING";var o="IS THE";var i="ONLY WAY";var f=null;var l=false;var d;if(f===null){console.log("Flag:"+n+" "+e+" "+o+" "+i);d=undefined}else if(typeof f==="undefined"){d=undefined}else{if(l){d=undefined}else{(function(){if(d){for(var n=0;n<10;n++){console.log("This code does nothing.")}doNothing()}else{doNothing()}})()}}})();
