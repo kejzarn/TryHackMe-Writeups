@@ -5,6 +5,22 @@
 **Description:** Bob is a security engineer at a firm and works closely with the software/DevOps team to develop a tourism web application. Once the website was moved from QA to Production, the team noticed that the website was getting hacked daily and wanted to know the exact reason. Bob consulted the blue team as well but has yet to be successful. Therefore, he finally enrolled in the Software Security pathway at THM to learn if he was doing something wrong.
 Deploy the machine by clicking the Start Machine button on the top right. You can access the website by visiting the URL http://x.x.x.x via your VPN connection or the AttackBox. Can you help Bob find the vulnerabilities and restore the website? <br>
 
+## Table of Contents
+
+- [Initial reconnaissance & thoughts](#Initial-reconnaissance-&--thoughts)
+- [What type of encoding is used by the hackers to obfuscate the JavaScript file?](#what-type-of-encoding-is-used-by-the-hackers-to-obfuscate-the-javascript-file)
+- [What is the flag value after deobfuscating the file?](#what-is-the-flag-value-after-deobfuscating-the-file)
+- [Logging is an important aspect. What is the name of the file containing email dumps?](#logging-is-an-important-aspect-what-is-the-name-of-the-file-containing-email-dumps)
+- [The logs folder contains email logs and has a message for the software team lead. What is the name of the directory that Bob has created?](#the-logs-folder-contains-email-logs-and-has-a-message-for-the-software-team-lead-what-is-the-name-of-the-directory-that-bob-has-created)
+- [What is the key file for opening the directory that Bob has created for Mark?](#what-is-the-key-file-for-opening-the-directory-that-bob-has-created-for-mark)
+- [What is the email address for ID 5 using the leaked API endpoint?](#what-is-the-email-address-for-id-5-using-the-leaked-api-endpoint)
+- [What is the ID for the user with admin privileges?](#what-is-the-id-for-the-user-with-admin-privileges)
+- [What is the endpoint for logging in as the admin? Mention the last endpoint instead of the URL. For example, if the answer is URL is tryhackme.com/admin - Just write /admin.](#what-is-the-endpoint-for-logging-in-as-the-admin-mention-the-last-endpoint-instead-of-the-url-for-example-if-the-answer-is-url-is-tryhackmecomadmin---just-write-admin)
+- [The attacker uploaded a web shell and renamed a file used for managing the server. Can you find the name of the web shell that the attacker has uploaded?](#the-attacker-uploaded-a-web-shell-and-renamed-a-file-used-for-managing-the-server-can-you-find-the-name-of-the-web-shell-that-the-attacker-has-uploaded)
+- [What is the name of the file renamed by the attacker for managing the web server?](#what-is-the-name-of-the-file-renamed-by-the-attacker-for-managing-the-web-server)
+- [Can you use the file manager to restore the original website by removing the "FINALLY HACKED" message? What is the flag value after restoring the main website?](#can-you-use-the-file-manager-to-restore-the-original-website-by-removing-the-finally-hacked-message-what-is-the-flag-value-after-restoring-the-main-website)
+- [](#Conclussions)
+
 # Initial reconnaissance & thoughts
 
 I began by visiting the provided url, in my case http://10.10.205.169 (**this will differ in your case and you need to modify all urls**). The websited had obviously been hacked and it is our job to unhack it. 
@@ -27,7 +43,7 @@ I recognise the format from hexadecimal format and like to utilise [hex analyser
 (function(){function doNothing(){}var n="DIRECTORY";var e="LISTING";var o="IS THE";var i="ONLY WAY";var f=null;var l=false;var d;if(f===null){console.log("Flag:"+n+" "+e+" "+o+" "+i);d=undefined}else if(typeof f==="undefined"){d=undefined}else{if(l){d=undefined}else{(function(){if(d){for(var n=0;n<10;n++){console.log("This code does nothing.")}doNothing()}else{doNothing()}})()}}})();
 ```
 This also answers a few questions for us: <br>
-> **What type of encoding is used by the hackers to obfuscate the JavaScript file?**
+> ### **What type of encoding is used by the hackers to obfuscate the JavaScript file?**
 > 
 > ```
 > Hex
@@ -35,7 +51,7 @@ This also answers a few questions for us: <br>
 
 
 By analysing the content of the derived function we get: 
-> **What is the flag value after deobfuscating the file?**
+> ### **What is the flag value after deobfuscating the file?**
 > 
 > ```
 > DIRECTORY LISTING IS THE ONLY WAY
@@ -72,7 +88,7 @@ root@ip-10-10-236-87:~# nikto -h 10.10.205.169
 The interesting parts are the directories /img/ and /logs/ there is also /phpmyadmin/ but that is not part of this CTF. 
 Both  /img/ and /logs/ contains some files but the file `email_dump.txt` which is also the questions to the third question.
 
-> **Logging is an important aspect. What is the name of the file containing email dumps?**
+> ### **Logging is an important aspect. What is the name of the file containing email dumps?**
 > 
 > ```
 > email_dump.txt
@@ -97,13 +113,13 @@ email_dump.txt contains the following message, and I've bolded the answers to qu
 For the sake of consistency, the answers to question 4 and 5 : 
 
 
-> **The logs folder contains email logs and has a message for the software team lead. What is the name of the directory that Bob has created?**
+> ### **The logs folder contains email logs and has a message for the software team lead. What is the name of the directory that Bob has created?**
 > 
 > ```
 > Planning
 > ```
 
-> **What is the key file for opening the directory that Bob has created for Mark?**
+> ### **What is the key file for opening the directory that Bob has created for Mark?**
 > 
 > ```
 > THM{100100111}
@@ -127,4 +143,147 @@ With this we can answer the 6 question by inputing `http://x.x.x.x/api/?customer
   "response_code": 200,
   "response_desc": "Success"
 }
+```
+This gives the answer to question 6. 
+
+> ### **What is the email address for ID 5 using the leaked API endpoint?**
+> 
+> ```
+> john@traverse.com
+> ```
+
+Continue travering over the customer id api from 0 - n until you find the admin, which will be `http://x.x.x.x/api/?customer_id=3` and thus answering question 7.
+
+```json
+{
+  "data": {
+    "id": "3",
+    "name": "admin",
+    "email": "realadmin@traverse.com",
+    "password": "admin_key!!!",
+    "timestamp": "2023-05-23 04:47:25",
+    "role": "admin",
+    "loginURL": "/realadmin",
+    "isadmin": "1"
+  },
+  "response_code": 200,
+  "response_desc": "Success"
+}
+```
+
+
+> ### **What is the ID for the user with admin privileges?**
+> 
+> ```
+> 3
+> ```
+
+This furthermore provides important information for continue our exploitation, we are given the username `realadmin@traverse.com`, the password `admin_key!!!` and corresponding login url `/realadmin` we procced to http://x.x.x.x/realadmin and provide the username & password and we are logged on to the admin portal! 
+
+Here we are meet with a command prompt which has two options for commands `System Owner`and `Current Directory` with the option to execute the commands. Executing `System Owner` returns a `www-data`, my guess is that this is the response from a `whoami` command.  
+Other than that I see little options for continuing deeper, thus I believe the way forward is to see if can intercept the exectuin commands and modify to our will so I spin up burp and intercept a `System Owner` command. 
+
+```html
+POST /realadmin/main.php HTTP/1.1
+Host: 10.10.205.169
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 11
+Origin: http://10.10.212.202
+Connection: close
+Referer: http://10.10.212.202/realadmin/main.php
+Cookie: PHPSESSID=il1s5f3ftavehmfs37j5d9nu5n
+Upgrade-Insecure-Requests: 1
+
+commands=whoami
+```
+As suspected we forward a `whoami`command to the server, I modify to a `ls` to list all files in our current directory, to get an understanding what is in there and what we are working with. We hit jackpot and find several things we are looking for: 
+
+![adminportal](https://github.com/kejzarn/TryHackMe-Writeups/blob/main/traverse/img/adminportal.png)
+
+We recognise two directories we already visited `index.php` and `main.php` additionally we have `thm_shell.php` and `renamed_file_manager.php` and an access key to the file manager `THM{10101}`. 
+
+This information provides answers to two questions, question 9 and 10: 
+
+> ### **The attacker uploaded a web shell and renamed a file used for managing the server. Can you find the name of the web shell that the attacker has uploaded?**
+> 
+> ```
+> thm_shell.php
+> ```
+
+> ### **What is the name of the file renamed by the attacker for managing the web server?**
+> 
+> ```
+> renamed_file_manager.php
+> ```
+
+Which leaves our final question! We attempt to access `http://x.x.x.x/realadmin/renamed_file_manager.php` with username predefind as `admin` and password `THM{10101}` and we are in the fill manager! 
+
+From here you can navigate to all files building up the website and change as you are like, our quest remains to save the website after search a little while we find the `index.php`
+
+```php
+<!-- Rest PHP code and HTML content -->
+<?php
+include './api/login.php';
+$basePath = "/";
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<?php
+include 'header.php';
+$message = "FINALLY HACKED";
+?>
+
+<!-- Main Content -->
+<main class="mx-auto py-8 h-[80vh] flex items-center justify-center">
+  <div class="rounded overflow-hidden shadow-lg bg-white p-8 flex ">
+    <?php
+    if ($message != "FINALLY HACKED") {
+      echo '<h1 class="text-gray-700 text-3xl py-6"> SUCCESSFULLY RESTORED WEBSITE FLAG: THM{WEBSITE_RESTORED}</h1>';
+    } else {
+      ?>
+      <h2 class="text-gray-700 text-3xl py-6"> <?php echo $message; ?> !!! I HATE MINIFIED JAVASCRIPT</h2>
+      <?php
+    }
+    ?>
+  </div>
+</main>
+
+<?php
+include 'footer.php';
+?>
+</body>
+</html>
+```
+What we are after here is to remove or change the value of `$message` as the code snippet reveals as long as the message is `FINALLY HACKED` we primary content will be locked. By removing this (or by simply looking at the code) we retrive the final flag `THM{WEBSITE_RESTORED}`.
+
+> ### **Can you use the file manager to restore the original website by removing the **FINALLY HACKED** message? What is the flag value after restoring the main website?**
+> 
+> ```
+> THM{WEBSITE_RESTORED}
+> ```
+
+![restored](https://github.com/kejzarn/TryHackMe-Writeups/blob/main/traverse/img/restored.png)
+
+Success! We restored the website! 
+
+# Conclussions 
+Additionally, after this, we would normally advise on the following improvements:
+
+- **Not allowing logs to be accessed from the public directory**
+- **Utilizing encrypted emails** (and probably some security awareness training)
+- **Endpoint protection**: It is possible to access `api/?customer_id=1` without being logged in
+- **IAM**: Even if we protect the endpoint only priveleged users should be able to access the database and see certain users
+- **Encryption**: Passwords should never stored in plaintext but should rather be stored in in their hashed value, preferably with a salt.
+- **Server Side Validation**: As security engineers we know we cannot trust the frontend, if we for some reason decide to have a shell on the frontend we need to validated the input on the backend and define an allowlist.
+
+The CTF in itself was fun with a somewhat redline between the different goals. 
+
+
+
 
